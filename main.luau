@@ -2,6 +2,7 @@ local Orion = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexw
 
 local Senko = {
     Lock = {
+        DBSpam = false,
         Enabled = false,
         Prediction = 0,
         HitPart = "Head"
@@ -72,11 +73,11 @@ game:GetService('RunService').Heartbeat:Connect(function()
         game.Players.LocalPlayer.Backpack['DB'].Parent =  game.Players.LocalPlayer.Character
     end
     if Senko.Anti.Antilock == true then
-        if Senko.Anti.Antimode == "Sky" then
+        if Senko.Anti.AntiMode == "Sky" then
             Character.HumanoidRootPart.Velocity = Vector3.new(0,9e9,0)
-        elseif Senko.Anti.Antimode == "Under" then
+        elseif Senko.Anti.AntiMode == "Under" then
             Character.HumanoidRootPart.Velocity = Vector3.new(0,-9e9,0)
-        elseif Senko.Anti.Antimode == "Random" then
+        elseif Senko.Anti.AntiMode == "Random" then
             Character.HumanoidRootPart.Velocity = Vector3.new(math.random(1,9) * 1e9,math.random(1,9) * 1e9,math.random(1,9) * 1e9)
         end
     end
