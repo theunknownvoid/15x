@@ -1,0 +1,84 @@
+local Orion = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+local Senko = {
+    Lock = {
+        DBSpam = false,
+        Enabled = false,
+        Prediction = 0,
+        HitPart = "Head"
+    },
+    Anti = {
+        Antilock = false,
+        AntiMode = ""
+    },
+}
+
+local Window = Orion:MakeWindow({Name = "Senko Premium", HidePremium = false, SaveConfig = false, ConfigFolder = "SenkoPremium"})
+
+local LockTab = Window:MakeTab({
+    Name = "Combat",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+LockTab:AddToggle({
+    Name = "Dot Lock",
+    Default = false,
+    Callback = function(v)
+        Senko.Lock.Enabled = v
+    end
+})
+
+LockTab:AddSlider({
+	Name = "Prediction",
+	Min = 0,
+	Max = 2,
+	Default = 0,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 0.01,
+	ValueName = "Prediction",
+	Callback = function(v)
+		Senko.Lock.Prediction = v
+	end    
+})
+
+local AntiTab = Window:MakeTab({
+    Name = "Anti Lock",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+AntiTab:AddToggle({
+    Name = "Anti Lock",
+    Default = false,
+    Callback = function(v)
+        Senko.Anti.Antilock = v
+    end
+})
+AntiTab:AddDropdown({
+	Name = "Dropdown",
+	Default = "Sky",
+	Options = {"Sky", "Under", "Random"},
+	Callback = function(Value)
+	    Senko.Anti.AntiMode = Value
+	end    
+})
+
+game:GetService('RunService').Heartbeat:Connect(function()
+    local LocalPlayer = game.Players.LocalPlayer
+    local Character = LocalPlayer.Character
+    if Senko.Lock.DBSpam == true then
+        game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
+        game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
+        game:GetService("ReplicatedStorage"):WaitForChild("ReloadWeapon"):FireServer()
+        game.Players.LocalPlayer.Backpack['DB'].Parent =  game.Players.LocalPlayer.Character
+    end
+    if Senko.Anti.Antilock == true then
+        if Senko.Anti.AntiMode == "Sky" then
+            Character.HumanoidRootPart.Velocity = Vector3.new(0,9e9,0)
+        elseif Senko.Anti.AntiMode == "Under" then
+            Character.HumanoidRootPart.Velocity = Vector3.new(0,-9e9,0)
+        elseif Senko.Anti.AntiMode == "Random" then
+            Character.HumanoidRootPart.Velocity = Vector3.new(math.random(1,9) * 1e9,math.random(1,9) * 1e9,math.random(1,9) * 1e9)
+        end
+    end
+end)
