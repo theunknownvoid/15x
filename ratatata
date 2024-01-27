@@ -41,7 +41,13 @@ LockTab:AddSlider({
 		Senko.Lock.Prediction = v
 	end    
 })
-
+LockTab:AddToggle({
+    Name = "DB Spam",
+    Default = false,
+    Callback = function(v)
+        Senko.Lock.DBSpam = v
+    end
+})
 local AntiTab = Window:MakeTab({
     Name = "Anti Lock",
     Icon = "rbxassetid://4483345998",
@@ -73,12 +79,19 @@ game:GetService('RunService').Heartbeat:Connect(function()
         game.Players.LocalPlayer.Backpack['DB'].Parent =  game.Players.LocalPlayer.Character
     end
     if Senko.Anti.Antilock == true then
+        local Velocity = Character.HumanoidRootPart.Velocity
         if Senko.Anti.AntiMode == "Sky" then
             Character.HumanoidRootPart.Velocity = Vector3.new(0,9e9,0)
+            game:GetService('RunService').RenderStepped:Wait()
+            Character.HumanoidRootPart.Velocity = Velocity
         elseif Senko.Anti.AntiMode == "Under" then
             Character.HumanoidRootPart.Velocity = Vector3.new(0,-9e9,0)
+            game:GetService('RunService').RenderStepped:Wait()
+            Character.HumanoidRootPart.Velocity = Velocity
         elseif Senko.Anti.AntiMode == "Random" then
             Character.HumanoidRootPart.Velocity = Vector3.new(math.random(1,9) * 1e9,math.random(1,9) * 1e9,math.random(1,9) * 1e9)
+            game:GetService('RunService').RenderStepped:Wait()
+            Character.HumanoidRootPart.Velocity = Velocity
         end
     end
 end)
