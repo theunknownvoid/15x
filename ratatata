@@ -4,7 +4,9 @@ local Senko = {
     Lock = {
         DBSpam = false,
         Enabled = false,
-        Prediction = 0,
+        HasTarget = false,
+        Target = nil,
+        Prediction = 0.19,
         HitPart = "Head"
     },
     Anti = {
@@ -12,6 +14,23 @@ local Senko = {
         AntiMode = ""
     },
 }
+
+function closestplayer()
+    local closestPlayer
+    local shortestDistance = Settings.Kalslock.FOV
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    for i, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+            local pos = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Character.PrimaryPart.Position)
+            local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(mouse.X, mouse.Y)).magnitude
+            if magnitude < shortestDistance then
+                closestPlayer = v
+                shortestDistance = magnitude
+            end
+        end
+    end
+    return closestPlayer
+end
 
 local Window = Orion:MakeWindow({Name = "Senko Premium", HidePremium = false, SaveConfig = false, ConfigFolder = "SenkoPremium"})
 
@@ -29,18 +48,43 @@ LockTab:AddToggle({
     end
 })
 
-LockTab:AddSlider({
-	Name = "Prediction",
-	Min = 0,
-	Max = 2,
-	Default = 0,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 0.01,
-	ValueName = "Prediction",
-	Callback = function(v)
-		Senko.Lock.Prediction = v
+LockTab:AddBind({
+	Name = "Keybind",
+	Default = Enum.KeyCode.E,
+	Hold = false,
+	Callback = function()
+        if Senko.Lock.Enabled == true then
+            if Senko.Lock.HasTarget == false then
+                Senko.Lock.Target = closestplayer()
+                Orion:MakeNotification({
+                   Name = "Senko Premium",
+                   Content = "Locked On to : ".. Senko.Lock.Target.Name,
+                   Image = "rbxassetid://8709610734",
+                   Time = 5
+                })
+            elseif Senko.Lock.HasTarget == true then
+                Senko.Lock.Target = nil
+                Orion:MakeNotification({
+                    Name = "Senko Premium",
+                    Content = "Locked On to : ".. Senko.Lock.Target.Name,
+                    Image = "rbxassetid://5314810647",
+                    Time = 5
+                })
+            end
+        end
 	end    
 })
+local PredictionLabel = LockTab:AddLabel("Prediction : ".. Senko.Lock.Prediction)
+
+LockTab:AddTextbox({
+	Name = "Prediction",
+	Default = "0.19",
+	TextDisappear = false,
+	Callback = function(Value)
+		Senko.Lock.Prediction = Value
+	end	  
+})
+
 LockTab:AddToggle({
     Name = "DB Spam",
     Default = false,
@@ -48,6 +92,7 @@ LockTab:AddToggle({
         Senko.Lock.DBSpam = v
     end
 })
+
 local AntiTab = Window:MakeTab({
     Name = "Anti Lock",
     Icon = "rbxassetid://4483345998",
@@ -72,6 +117,7 @@ AntiTab:AddDropdown({
 game:GetService('RunService').Heartbeat:Connect(function()
     local LocalPlayer = game.Players.LocalPlayer
     local Character = LocalPlayer.Character
+    PredictionLabel:Set("Prediction : ".. Senko.Lock.Prediction)
     if Senko.Lock.DBSpam == true then
         game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
         game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
@@ -94,4 +140,24 @@ game:GetService('RunService').Heartbeat:Connect(function()
             Character.HumanoidRootPart.Velocity = Velocity
         end
     end
+end)
+
+local Mouse = game.Players.LocalPlayer:GetMouse()
+local __index
+__index = hookmetamethod(game, "__index", function(self, key)
+    if self == Mouse and (tostring(key) == "Hit" or tostring(key) == "Target") then
+		if Senko.Lock.Enabled and Senko.Lock.Target ~= nil then
+		    local Arguments = {}
+            if TargetAimbot.Resolver then
+		    	Arguments[3] = Senko.Lock.Target.Character[Senko.Lock.HitPart].CFrame + (Senko.Lock.Target.Character.Humanoid.MoveDirection * Senko.Lock.Prediction * Senko.Lock.Target.Character.Humanoid.WalkSpeed)
+		    	Arguments[4] = Senko.Lock.Target.Character[Senko.Lock.HitPart]
+		    else
+		    	Arguments[3] = (Senko.Lock.Target.Character[Senko.Lock.HitPart].CFrame + (Senko.Lock.Target.Character[Senko.Lock.HitPart].Velocity * Senko.Lock.Prediction))
+		    	Arguments[4] = Senko.Lock.Target.Character[Senko.Lock.HitPart]
+		    end
+
+			return (tostring(key) == "Hit" and Arguments[3] or tostring(key) == "Target" and Arguments[4])
+	    end  
+    end
+    return __index(self, key)
 end)
