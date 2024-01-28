@@ -93,7 +93,7 @@ LockTab:AddToggle({
         Senko.Lock.Resolver = v
     end
 })
-
+Tab:AddLabel("Miscellaneous")
 LockTab:AddToggle({
     Name = "DB Spam",
     Default = false,
