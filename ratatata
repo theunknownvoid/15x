@@ -7,7 +7,8 @@ local Senko = {
         HasTarget = false,
         Target = nil,
         Prediction = 0.19,
-        HitPart = "Head"
+        HitPart = "Head",
+        Resolver = false
     },
     Anti = {
         Antilock = false,
@@ -17,7 +18,7 @@ local Senko = {
 
 function closestplayer()
     local closestPlayer
-    local shortestDistance = Settings.Kalslock.FOV
+    local shortestDistance = math.huge
     local mouse = game.Players.LocalPlayer:GetMouse()
     for i, v in pairs(game.Players:GetPlayers()) do
         if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -62,11 +63,11 @@ LockTab:AddBind({
                    Image = "rbxassetid://8709610734",
                    Time = 5
                 })
-            elseif Senko.Lock.HasTarget == true then
+            elseif Senko.Lock.HasTarget == false then
                 Senko.Lock.Target = nil
                 Orion:MakeNotification({
                     Name = "Senko Premium",
-                    Content = "Locked On to : ".. Senko.Lock.Target.Name,
+                    Content = "Unlocked.",
                     Image = "rbxassetid://5314810647",
                     Time = 5
                 })
@@ -83,6 +84,14 @@ LockTab:AddTextbox({
 	Callback = function(Value)
 		Senko.Lock.Prediction = Value
 	end	  
+})
+
+LockTab:AddToggle({
+    Name = "Resolver",
+    Default = false,
+    Callback = function(v)
+        Senko.Lock.Resolver = v
+    end
 })
 
 LockTab:AddToggle({
@@ -148,7 +157,7 @@ __index = hookmetamethod(game, "__index", function(self, key)
     if self == Mouse and (tostring(key) == "Hit" or tostring(key) == "Target") then
 		if Senko.Lock.Enabled and Senko.Lock.Target ~= nil then
 		    local Arguments = {}
-            if TargetAimbot.Resolver then
+            if Senko.Target.Resolver then
 		    	Arguments[3] = Senko.Lock.Target.Character[Senko.Lock.HitPart].CFrame + (Senko.Lock.Target.Character.Humanoid.MoveDirection * Senko.Lock.Prediction * Senko.Lock.Target.Character.Humanoid.WalkSpeed)
 		    	Arguments[4] = Senko.Lock.Target.Character[Senko.Lock.HitPart]
 		    else
