@@ -3,6 +3,7 @@ local Orion = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexw
 
 local Senko = {
     Lock = {
+        PermTool = false,
         DBSpam = false,
         Enabled = false,
         HasTarget = false,
@@ -15,6 +16,7 @@ local Senko = {
             Speed = 10,
             Distance = 5,
             Integer = 0,
+            Height = 0
         }
     },
     Anti = {
@@ -56,9 +58,17 @@ LockTab:AddToggle({
     end
 })
 
+LockTab:AddToggle({
+    Name = "Permanent Tool",
+    Default = false,
+    Callback = function(v)
+        Senko.Lock.PermTool = v
+    end
+})
+
 LockTab:AddBind({
 	Name = "Keybind",
-	Default = Enum.KeyCode.E,
+	Default = Enum.KeyCode.X,
 	Hold = false,
 	Callback = function()
         if Senko.Lock.Enabled == true then
@@ -108,7 +118,6 @@ LockTab:AddToggle({
     Name = "Orbit",
     Default = false,
     Callback = function(v)
-        Senko.Lock.Orbit.Integer = 0
         Senko.Lock.Orbit.Enabled = v
     end
 })
@@ -117,7 +126,8 @@ LockTab:AddTextbox({
 	Default = "10",
 	TextDisappear = false,
 	Callback = function(Value)
-		Senko.Lock.Orbit.Speed = Value
+        Senko.Lock.Orbit.Integer = 0
+		Senko.Lock.Orbit.Speed = tonumber(Value)
 	end	  
 })
 LockTab:AddTextbox({
@@ -125,7 +135,16 @@ LockTab:AddTextbox({
 	Default = "5",
 	TextDisappear = false,
 	Callback = function(Value)
-		Senko.Lock.Orbit.Distance = Value
+		Senko.Lock.Orbit.Distance = tonumber(Value)
+	end	  
+})
+
+LockTab:AddTextbox({
+	Name = "Orbit Distance",
+	Default = "0",
+	TextDisappear = false,
+	Callback = function(Value)
+		Senko.Lock.Orbit.Height = tonumber(Value)
 	end	  
 })
 LockTab:AddToggle({
@@ -168,7 +187,20 @@ game:GetService('RunService').Heartbeat:Connect(function()
     end
     if Senko.Lock.Orbit.Enabled == true and Senko.Lock.HasTarget == true then
         Senko.Lock.Orbit.Integer = Senko.Lock.Orbit.Integer + Senko.Lock.Orbit.Speed
-        Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[Senko.Lock.Target.Name].Character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(Senko.Lock.Orbit.Integer), 0) * CFrame.new(Senko.Lock.Orbit.Distance, 0, 0)
+        Character.HumanoidRootPart.CFrame = CFrame.new(game.Players[Senko.Lock.Target.Name].Character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(Senko.Lock.Orbit.Integer), 0) * CFrame.new(Senko.Lock.Orbit.Distance, Senko.Lock.Orbit.Height, 0)
+    end
+    if Senko.Lock.PermTool == true then
+        if not game.Players.LocalPlayer.Backpack:FindFirstChild('xvideos') then
+            if not game.Players.LocalPlayer.Character:FindFirstChild('xvideos') then
+                tool = Instance.new("Tool")
+                tool.RequiresHandle = false
+                tool.Name = 'xvideos'
+                tool.Activated:connect(function()
+                    game:GetService('VirtualInPutManager'):SendKeyEvent(true, 'X', false, game)
+                end)
+                tool.Parent = game.Players.LocalPlayer.Backpack
+            end
+        end
     end
     if Senko.Anti.Antilock == true then
         local Velocity = Character.HumanoidRootPart.Velocity
