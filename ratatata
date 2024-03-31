@@ -196,7 +196,7 @@ game:GetService('RunService').Heartbeat:Connect(function()
                 tool.RequiresHandle = false
                 tool.Name = 'xvideos'
                 tool.Activated:connect(function()
-                    game:GetService('VirtualInPutManager'):SendKeyEvent(true, 'X', false, game)
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true, 'X', false, game)
                 end)
                 tool.Parent = game.Players.LocalPlayer.Backpack
             end
