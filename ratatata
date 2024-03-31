@@ -84,8 +84,6 @@ LockTab:AddBind({
         end
 	end    
 })
-local PredictionLabel = LockTab:AddLabel("Prediction : ".. Senko.Lock.Prediction)
-
 LockTab:AddTextbox({
 	Name = "Prediction",
 	Default = "0.19",
@@ -102,15 +100,9 @@ LockTab:AddToggle({
         Senko.Lock.Resolver = v
     end
 })
-local OtherLabel = LockTab:AddLabel("other stuff idk lol")
 
-LockTab:AddToggle({
-    Name = "Resolver",
-    Default = false,
-    Callback = function(v)
-        Senko.Lock.Resolver = v
-    end
-})
+
+local OtherLabel = LockTab:AddLabel("Orbit Stuff")
 
 LockTab:AddToggle({
     Name = "Orbit",
@@ -120,32 +112,22 @@ LockTab:AddToggle({
         Senko.Lock.Orbit.Enabled = v
     end
 })
-
-LockTab:AddSlider({
+LockTab:AddTextbox({
 	Name = "Orbit Speed",
-	Min = 1,
-	Max = 100,
-	Default = 10,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
+	Default = "10",
+	TextDisappear = false,
 	Callback = function(Value)
 		Senko.Lock.Orbit.Speed = Value
-	end    
+	end	  
 })
-
-LockTab:AddSlider({
+LockTab:AddTextbox({
 	Name = "Orbit Distance",
-	Min = 1,
-	Max = 50,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
+	Default = "5",
+	TextDisappear = false,
 	Callback = function(Value)
 		Senko.Lock.Orbit.Distance = Value
-	end    
+	end	  
 })
-
-LockTab:AddLabel("Miscellaneous")
 LockTab:AddToggle({
     Name = "DB Spam",
     Default = false,
@@ -178,7 +160,6 @@ AntiTab:AddDropdown({
 game:GetService('RunService').Heartbeat:Connect(function()
     local LocalPlayer = game.Players.LocalPlayer
     local Character = LocalPlayer.Character
-    PredictionLabel:Set("Prediction : ".. Senko.Lock.Prediction)
     if Senko.Lock.DBSpam == true then
         game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
         game:GetService("ReplicatedStorage"):WaitForChild("ToolRemoteEvents"):WaitForChild("DB"):FireServer(game.Players.LocalPlayer:GetMouse().Hit.p, game:GetService("Players").LocalPlayer.Character.DB)
@@ -206,7 +187,6 @@ game:GetService('RunService').Heartbeat:Connect(function()
         end
     end
 end)
-
 local Mouse = game.Players.LocalPlayer:GetMouse()
 local __index
 __index = hookmetamethod(game, "__index", function(self, key)
