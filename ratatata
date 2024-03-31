@@ -140,7 +140,7 @@ LockTab:AddTextbox({
 })
 
 LockTab:AddTextbox({
-	Name = "Orbit Distance",
+	Name = "Orbit Height",
 	Default = "0",
 	TextDisappear = false,
 	Callback = function(Value)
